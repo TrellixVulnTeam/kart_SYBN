@@ -98,6 +98,9 @@ pyapp-Darwin: $(pyinstaller) $(SRC)/vendor/dist/vendor-Darwin.tar.gz
 # fix for https://github.com/pyinstaller/pyinstaller/issues/5442
 	sed -i '' -e 's#<string>MacOS/kart_cli</string>#<string>kart_cli</string>#' macos/dist/Kart.app/Contents/Info.plist
 
+	mkdir -p macos/dist/Kart.app/Contents/MacOS/bin/
+	ln -s ../pdal_cli macos/dist/Kart.app/Contents/MacOS/bin/pdal
+
 	-$(RM) -r $(SRC)/vendor/dist/env/
 
 ifdef CODESIGN

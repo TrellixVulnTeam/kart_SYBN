@@ -289,3 +289,6 @@ check-lib-deps-Linux:
 install: $(build-gdal) $(pywheel) | $(ccache-deps)
 # SWIG bindings don't seem to pick up the configured PREFIX unless it's in the env again
 	$(MAKE) -C src install
+	# Copy geotiff headers to $PREFIX/include/ - these aren't exported by building libgdal, but would be exported by building libgeotiff
+	# TODO: there's probably a better way.
+	cp -n src/frmts/gtiff/libgeotiff/*.{h,inc} $(PREFIX)/include/

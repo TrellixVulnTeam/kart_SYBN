@@ -127,11 +127,14 @@ if is_win:
     )
 else:
     pyi_analysis.binaries += [('git', 'vendor/dist/env/bin/git', 'BINARY')]
+    pyi_analysis.binaries += [('pdal_cli', 'vendor/dist/env/bin/pdal_cli', 'BINARY')]
     libexec_root = 'vendor/dist/env/libexec'
     pyi_analysis.datas += Tree('vendor/dist/env/share', prefix='share')
 
 if is_linux:
-    pyi_analysis.binaries += [('libcrypt.so.2', '/usr/local/lib/libcrypt.so.2', 'BINARY')]
+    pyi_analysis.binaries += [
+        ('libcrypt.so.2', '/usr/local/lib/libcrypt.so.2', 'BINARY')
+    ]
 
 pyi_pyz = PYZ(pyi_analysis.pure, pyi_analysis.zipped_data, cipher=None)
 

@@ -2,6 +2,7 @@ certifi
 Click~=7.0
 cryptography
 msgpack~=0.6.1
+pdal
 pymysql
 Pygments
 Rtree~=0.9.4
