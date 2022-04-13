@@ -28,7 +28,7 @@ def requires_pdal():
         pass
 
     pytest.helpers.feature_assert_or_skip(
-        "pdal package installed", "KART_EXPECT_PDAL", has_pdal, ci_require=False
+        "pdal package installed", "KART_EXPECT_PDAL", has_pdal, ci_require=True
     )
 
 
@@ -38,7 +38,7 @@ def requires_git_lfs():
     has_git_lfs = r.returncode == 0
 
     pytest.helpers.feature_assert_or_skip(
-        "Git LFS installed", "KART_EXPECT_GIT_LFS", has_git_lfs, ci_require=False
+        "Git LFS installed", "KART_EXPECT_GIT_LFS", has_git_lfs, ci_require=True
     )
 
 
