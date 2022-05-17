@@ -743,6 +743,7 @@ def test_clone_with_reference_spatial_filter(data_archive, cli_runner, tmp_path)
         pytest.param("table", H.TABLE.LAYER, "polygons", id="table"),
     ],
 )
+@pytest.mark.skip(reason="Not currently working with PROJ 9.0")
 def test_spatial_filtered_workingcopy(
     archive, table, filter_key, data_archive, cli_runner
 ):
