@@ -106,6 +106,7 @@ jobs:
       - name: "vendor: source download"
         if: "steps.cache-vendor-dist.outputs.cache-hit != 'true' && steps.cache-vendor-source.outputs.cache-hit != 'true'"
         run: |
+          sudo apt-get install -q -y fossil
           tar xvf .cache/vendor-source/vendor.tar || true
           echo 'verbose = off' >> $HOME/.wgetrc
           make -C vendor sources
@@ -122,7 +123,7 @@ jobs:
       - name: "vendor: build"
         if: steps.cache-vendor-dist.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get install -q -y ccache fossil
+          sudo apt-get install -q -y ccache
           tar xvf .cache/vendor-source/vendor.tar
           echo 'verbose = off' >> $HOME/.wgetrc
           mkdir -p ${{ env.CCACHE_DIR }}
