@@ -16,3 +16,6 @@ brew "unixodbc"
 
 # s2geometry dependencies
 brew "swig"
+
+# spatialite
+brew "fossil"

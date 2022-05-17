@@ -1,4 +1,4 @@
-SPATIALITE_VERSION ?= 5.0.1
+SPATIALITE_VERSION ?= 973bb387608b61cf9e4edfa339f5012be3909cc8
 
 SHELL = /bin/bash
 export PREFIX ?= $(abspath env)
@@ -11,14 +11,8 @@ endif
 
 SPATIALITE_ARCHIVE := libspatialite-$(SPATIALITE_VERSION).tar.gz
 
-CFLAGS += -DACCEPT_USE_OF_DEPRECATED_PROJ_API_H
-
-export PKG_CONFIG_PATH := $(realpath $(PREFIX)/lib/pkgconfig)
-PROJ_CFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config proj --cflags)
-PROJ_LDFLAGS := $(shell PKG_CONFIG_PATH=$(PKG_CONFIG_PATH) pkg-config proj --libs)
-
-export CFLAGS += $(PROJ_CFLAGS)
-export LDFLAGS := $(value LDFLAGS) $(PROJ_LDFLAGS)
+CFLAGS += -I$(PREFIX)/include
+LDFLAGS += -L$(PREFIX)/lib
 
 ifeq ($(PLATFORM),Darwin)
 	CCACHE_PATH = /usr/local/opt/ccache/bin
@@ -56,7 +50,7 @@ cleaner: clean
 
 .PHONY: cleanest
 cleanest:
-	-$(RM) -r src
+	-$(RM) -r src $(SPATIALITE_ARCHIVE) libspatialite.fossil
 
 .PHONY: clean-configure
 clean-configure:
@@ -67,7 +61,9 @@ clean-configure:
 #
 
 $(SPATIALITE_ARCHIVE):
-	wget http://www.gaia-gis.it/gaia-sins/$@ -O $@
+	-$(RM) libspatialite.fossil
+	fossil clone https://www.gaia-gis.it/fossil/libspatialite libspatialite.fossil
+	fossil tarball -R libspatialite.fossil $(SPATIALITE_VERSION) $@
 
 .PHONY: archive
 archive: $(SPATIALITE_ARCHIVE)
@@ -77,7 +73,7 @@ archive: $(SPATIALITE_ARCHIVE)
 #
 
 src: $(SPATIALITE_ARCHIVE)
-	rm -rf $@
+	$(RM) -r $@
 	mkdir -p $@
 	@echo "Extracting $(SPATIALITE_ARCHIVE) ..."
 	tar xzf $(SPATIALITE_ARCHIVE) --strip-components=1 -C $@
@@ -92,23 +88,22 @@ source: src
 
 $(configure-spatialite): export PATH:=$(realpath ../geos/env/bin):$(PATH)
 $(configure-spatialite): export PKG_CONFIG_PATH=/dev/null
-$(configure-spatialite): export LD_LIBRARY_PATH:=$(LD_LIBRARY_PATH):$(PREFIX)/lib
+$(configure-spatialite): export CFLAGS:=$(CFLAGS)
+$(configure-spatialite): export LDFLAGS:=$(LDFLAGS)
 $(configure-spatialite): | src $(libs)
-	@test "$(PROJ_CFLAGS)" || ( echo ">> PROJ_CFLAGS did not resolve"; exit 1 )
-	@test "$(PROJ_LDFLAGS)" || ( echo ">> PROJ_LDFLAGS did not resolve"; exit 1 )
-	@test "`command -v geos-config`" && echo ">> geos-config: `command -v geos-config`" || ( echo ">> geos-config not found"; exit 1 )
 	cd src && ./configure \
 		--prefix=$(PREFIX) \
 		--disable-dependency-tracking \
-		--enable-examples=no \
-		--enable-freexl=no \
-		--enable-gcov=no \
-		--enable-gcp=no \
-		--enable-knn=no \
-		--enable-libxml2=no \
 		--enable-mathsql=no \
+		--enable-freexl=no \
+		--enable-gcp=no \
+		--enable-rttopo=no \
+		--enable-libxml2=no \
 		--enable-minizip=no \
-		--enable-rttopo=no
+		--enable-gcov=no \
+		--enable-examples=no \
+		--enable-module-only=yes
+
 
 .PHONY: configure
 configure: clean-configure $(configure-spatialite)
@@ -122,7 +117,7 @@ $(build-spatialite): $(configure-spatialite)
 	fi
 ifeq ($(PLATFORM),Darwin)
 	install_name_tool \
-		-change $(PREFIX)/lib/libproj.15.dylib @rpath/libproj.15.dylib \
+		-change $(PREFIX)/lib/libproj.25.dylib @rpath/libproj.25.dylib \
 		-change libsqlite3.0.dylib @rpath/libsqlite3.0.dylib \
 		-change libgeos_c.1.dylib @rpath/libgeos_c.1.dylib \
 		-change libgeos_c.1.16.dylib @rpath/libgeos_c.1.16.dylib \
@@ -151,12 +146,12 @@ print-lib-deps: print-lib-deps-$(PLATFORM)
 .PHONY: print-lib-deps-Darwin
 print-lib-deps-Darwin:
 	@echo -e "\nExamining library dependencies..."
-	cd src && find . \( -name "*.dylib" -o -name "*.so" \) -exec otool -L {} \;
+	cd src && find . -type f \( -name "*.dylib" -o -name "*.so" \) -exec otool -L {} \;
 
 .PHONY: print-lib-deps-Linux
 print-lib-deps-Linux:
 	@echo -e "\nExamining library dependencies..."
-	cd src  && find . -name "*.so" -print -exec ldd {} \;
+	cd src  && find . -type f -name "*.so" -print -exec ldd {} \;
 
 .PHONY: check-lib-deps
 check-lib-deps: check-lib-deps-$(PLATFORM)
@@ -164,9 +159,9 @@ check-lib-deps: check-lib-deps-$(PLATFORM)
 .PHONY: check-lib-deps-Darwin
 check-lib-deps-Darwin:
 	@echo -e "\nLooking for missing library dependencies..."
-	find src \( -name "*.dylib" -o -name "*.so" \) | xargs -t -I % sh -c '! (otool -l % | grep /usr/local/ )'
+	find src -type f \( -name "*.dylib" -o -name "*.so" \) | xargs -t -I % sh -c '! (otool -l % | grep /usr/local/ )'
 
 .PHONY: check-lib-deps-Linux
 check-lib-deps-Linux:
 	@echo -e "\nLooking for missing library dependencies..."
-	find src -name "*.so" | xargs -t -I % sh -c '! ( ldd % | grep -P " => /usr/(local|lib)/(?!x86_64-linux-gnu)" )'
+	find src -type f -name "*.so" | xargs -t -I % sh -c '! ( ldd % | grep -P " => /usr/(local|lib)/(?!x86_64-linux-gnu)" )'

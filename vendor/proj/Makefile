@@ -40,13 +40,11 @@ all: $(build-proj)
 .PHONY: clean
 clean:
 	-$(RM) -r env
-	-$(RM) src/src/.libs/libproj.*
-	-$(RM) src/src/libproj.la
-	-$(RM) src/proj.pc
+	-cmake --build build/ --target clean
 
 .PHONY: cleaner
 cleaner: clean
-	-$(MAKE) -C src/ clean
+	-$(RM) -r build/
 
 .PHONY: cleanest
 cleanest:
