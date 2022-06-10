@@ -198,6 +198,7 @@ lib-fix-Darwin:
 	@echo fixing gdal libraries ...
 	install_name_tool \
 		-change $(SQLITE_PREFIX)/lib/libsqlite3.0.dylib @rpath/libsqlite3.0.dylib \
+		-change libsqlite3.0.dylib @rpath/libsqlite3.0.dylib \
 		-change /usr/local/opt/geos/lib/libgeos_c.1.dylib @rpath/libgeos_c.1.dylib \
 		-change $(JSONC_PREFIX)/lib/libjson-c.5.dylib @rpath/libjson-c.5.dylib \
 		-change $(PROJ_PREFIX)/lib/libproj.15.dylib @rpath/libproj.15.dylib \
