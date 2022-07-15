@@ -88,6 +88,12 @@ $(py-install-test): requirements/test.txt $(py-install-main)
 $(py-install-docs): requirements/docs.txt $(py-install-main)
 $(py-install-dev): requirements/dev.txt $(py-install-main) $(py-install-test) $(py-install-docs)
 
+$(VIRTUAL_ENV)/.requirement%.installed: | $(VIRTUAL_ENV)
+	pip install --no-deps -r $<
+	# TODO - this is a hack and only works on macos. Also the recipe order is important for some reason.
+	python -m pip show pdal | awk '/Location:/ {print $$2 "/pdal/libpdalpython.cpython-37m-darwin.so"}' | xargs install_name_tool -add_rpath @loader_path/../../../ -add_rpath @loader_path/../
+	touch $@
+
 $(VIRTUAL_ENV)/.%.installed: | $(VIRTUAL_ENV)
 	pip install --no-deps -r $<
 	touch $@

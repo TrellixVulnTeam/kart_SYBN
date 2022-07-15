@@ -96,6 +96,9 @@ pyapp-Darwin: $(pyinstaller) $(SRC)/vendor/dist/vendor-Darwin.tar.gz
 		--distpath platforms/macos/dist/ \
 		kart.spec
 
+	mkdir -p macos/dist/Kart.app/Contents/MacOS/bin/
+	ln -s ../pdal_cli macos/dist/Kart.app/Contents/MacOS/bin/pdal
+
 	-$(RM) -r $(SRC)/vendor/dist/env/
 
 	# fix up dylibs which should be symlinks

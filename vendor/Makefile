@@ -42,7 +42,7 @@ PYDEPS := pip wheel $(WHEELTOOL) cmake==3.* certifi
 # if we export SSL_CERT_FILE it breaks wget under macos ¯\_(ツ)_/¯
 export CERTIFI_SSL_CERT_FILE=$(abspath $(PREFIX)/lib/python3.7/site-packages/certifi/cacert.pem)
 
-packages = proj jsonc geos gdal spatialite libgit2 pygit2 psycopg2 pysqlite3
+packages = proj jsonc geos gdal spatialite libgit2 pygit2 psycopg2 pysqlite3 pdal
 ifeq ($(PLATFORM),Linux)
 packages += sqlite spatialindex git curl libpq pyodbc
 endif
@@ -66,8 +66,10 @@ lib-pygit2 := env/lib/python3.7/site-packages/pygit2/__init__.py
 lib-pysqlite3 := env/lib/python3.7/site-packages/pysqlite3/__init__.py
 lib-psycopg2 := env/lib/python3.7/site-packages/psycopg2/__init__.py
 lib-pyodbc := env/lib/python3.7/site-packages/pyodbc.$(LIBINFIX).so
+lib-pdal := env/lib/libpdalcpp.$(LIBSUFFIX)
 
-build-libs := $(lib-gdal) $(lib-spatialite) $(lib-pygit2) $(lib-git) $(lib-libgit2) $(lib-psycopg2) $(lib-pysqlite3)
+
+build-libs := $(lib-gdal) $(lib-spatialite) $(lib-pygit2) $(lib-git) $(lib-libgit2) $(lib-psycopg2) $(lib-pysqlite3) $(lib-pdal)
 
 
 # default target
@@ -88,6 +90,7 @@ $(lib-git): $(lib-curl) $(lib-sqlite) git_build
 $(lib-proj): $(lib-sqlite) proj_build
 $(lib-libgit2): libgit2_build
 $(lib-spatialite): $(lib-sqlite) $(lib-geos) $(lib-proj) spatialite_build
+$(lib-pdal): pdal_build
 
 $(lib-gdal): $(lib-sqlite) $(lib-geos) $(lib-proj) $(lib-jsonc) $(lib-pq)
 	$(MAKE) -C gdal install wheel
@@ -281,6 +284,10 @@ lib-psycopg2: $(lib-psycopg2)
 .PHONY: lib-pyodbc
 lib-pyodbc: $(lib-pyodbc)
 
+.PHONY: lib-pdal
+lib-pdal: $(lib-pdal)
+
+
 .PHONY: build-Darwin
 build-Darwin: VENDOR:=build/vendor-Darwin
 build-Darwin: VENDOR_ENV:=$(VENDOR)/env
@@ -308,6 +315,8 @@ build-Darwin: $(build-libs) $(brew-libs)
 	cp -vaf env/share/git-core/templates $(VENDOR_ENV)/share/git-core/
 	cp -vaf env/libexec/git-core $(VENDOR_ENV)/libexec/
 	cp -vaf env/bin/git $(VENDOR_ENV)/bin/
+	cp -vaf env/bin/pdal $(VENDOR_ENV)/bin/
+	cp -vaf env/bin/pdal $(VENDOR_ENV)/bin/pdal_cli
 
 	tar czf $(vendor-Darwin-archive) -C $(VENDOR) env wheelhouse
 	-$(RM) -r $(VENDOR)
