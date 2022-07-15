@@ -81,7 +81,7 @@ $(configure-sqlite): | src
 configure: clean-configure $(configure-sqlite)
 
 $(build-sqlite): $(configure-sqlite)
-	$(MAKE) -C src -j 2
+	$(MAKE) -C src
 	$(MAKE) print-lib-deps-$(PLATFORM)
 	$(MAKE) check-lib-deps-$(PLATFORM)
 
