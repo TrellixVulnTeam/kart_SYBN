@@ -656,6 +656,8 @@ jobs:
       - name: "app: unit tests"
         env:
           KART_EXPECT_MSSQLDRIVER: 0
+          KART_EXPECT_PDAL: 1
+          KART_EXPECT_GIT_LFS: 1
         run: |
           make ci-test
 
