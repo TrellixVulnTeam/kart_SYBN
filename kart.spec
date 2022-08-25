@@ -36,7 +36,7 @@ if is_win:
             vr.write(vr_doc)
 
 if is_linux:
-    # TODO - these don't actually exclude these files as the check is run in 
+    # TODO - these don't actually exclude these files as the check is run in
     #  a separate process
     # This needs to match the OS dependencies in platforms/linux/fpm.sh
     # We want to treat libstdc++ as a system dependency
@@ -55,7 +55,7 @@ if is_linux:
 
 
 if is_linux or is_darwin:
-    # TODO - these don't actually exclude these files as the check is run in 
+    # TODO - these don't actually exclude these files as the check is run in
     #  a separate process
     # We want to treat unixODBC (libodbc) as a system dependency, since the MSSQL
     # drivers depend on it, and we don't want two different versions imported
@@ -98,11 +98,12 @@ pyi_analysis = Analysis(
     # only set kart_cli_helper as a binary for Linux or MacOS, need to
     # do here as modifying after the Analysis instance is created fails
     binaries=[
-        binary for binary in 
-        (
+        binary
+        for binary in (
             ('vendor/dist/env/lib/*', '.'),
-            ('cli_helper/kart_cli_helper', '.')
-        ) if is_linux or is_darwin or is_win and binary[0] != "cli_helper/kart_cli_helper"
+            ('cli_helper/kart_cli_helper', '.'),
+        )
+        if is_linux or is_darwin or is_win and binary[0] != "cli_helper/kart_cli_helper"
     ],
     datas=[
         ('kart/VERSION', 'kart'),
@@ -134,7 +135,9 @@ pyi_analysis = Analysis(
 )
 
 if is_linux or is_darwin:
-    pyi_analysis.exclude_system_libraries(list_of_exceptions=['libffi*', 'libreadline*'])
+    pyi_analysis.exclude_system_libraries(
+        list_of_exceptions=['libffi*', 'libreadline*']
+    )
 
 if is_win:
     pyi_analysis.datas += Tree('vendor/dist/git', prefix='git')
@@ -145,7 +148,7 @@ if is_win:
     )
 else:
     pyi_analysis.binaries += [('git', 'vendor/dist/env/bin/git', 'BINARY')]
-    pyi_analysis.binaries += [('pdal_cli', 'vendor/dist/env/bin/pdal_cli', 'BINARY')]
+    pyi_analysis.binaries += [('pdal', 'vendor/dist/env/bin/pdal', 'BINARY')]
     libexec_root = 'vendor/dist/env/libexec'
     pyi_analysis.datas += Tree('vendor/dist/env/share', prefix='share')
 

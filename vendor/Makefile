@@ -316,7 +316,6 @@ build-Darwin: $(build-libs) $(brew-libs)
 	cp -vaf env/libexec/git-core $(VENDOR_ENV)/libexec/
 	cp -vaf env/bin/git $(VENDOR_ENV)/bin/
 	cp -vaf env/bin/pdal $(VENDOR_ENV)/bin/
-	cp -vaf env/bin/pdal $(VENDOR_ENV)/bin/pdal_cli
 
 	tar czf $(vendor-Darwin-archive) -C $(VENDOR) env wheelhouse
 	-$(RM) -r $(VENDOR)
