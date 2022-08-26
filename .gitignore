@@ -14,6 +14,8 @@ vendor/geos/**
 !vendor/geos/Makefile
 vendor/git/**
 !vendor/git/Makefile
+vendor/git-lfs/**
+!vendor/git-lfs/Makefile
 vendor/jsonc/**
 !vendor/jsonc/Makefile
 vendor/libgit2/**

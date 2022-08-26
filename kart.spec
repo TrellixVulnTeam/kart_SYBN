@@ -148,6 +148,7 @@ if is_win:
     )
 else:
     pyi_analysis.binaries += [('git', 'vendor/dist/env/bin/git', 'BINARY')]
+    pyi_analysis.binaries += [('git-lfs', 'vendor/dist/env/bin/git-lfs', 'BINARY')]
     pyi_analysis.binaries += [('pdal', 'vendor/dist/env/bin/pdal', 'BINARY')]
     libexec_root = 'vendor/dist/env/libexec'
     pyi_analysis.datas += Tree('vendor/dist/env/share', prefix='share')

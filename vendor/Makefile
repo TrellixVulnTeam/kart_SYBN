@@ -57,8 +57,8 @@ lib-spatialindex := env/lib/libspatialindex_c.$(LIBSUFFIX)
 lib-pq := env/lib/libpq.$(LIBSUFFIX)
 lib-sqlite := env/lib/libsqlite3.$(LIBSUFFIX)
 lib-git := env/bin/git
+lib-git-lfs := env/bin/git-lfs
 lib-curl := env/lib/libcurl.$(LIBSUFFIX)
-
 lib-spatialite := env/lib/mod_spatialite.$(LIBSUFFIX)
 lib-gdal := env/lib/python3.7/site-packages/osgeo/__init__.py
 lib-libgit2 := env/lib/libgit2.$(LIBSUFFIX)
@@ -69,7 +69,7 @@ lib-pyodbc := env/lib/python3.7/site-packages/pyodbc.$(LIBINFIX).so
 lib-pdal := env/lib/libpdalcpp.$(LIBSUFFIX)
 
 
-build-libs := $(lib-gdal) $(lib-spatialite) $(lib-pygit2) $(lib-git) $(lib-libgit2) $(lib-psycopg2) $(lib-pysqlite3) $(lib-pdal)
+build-libs := $(lib-gdal) $(lib-spatialite) $(lib-pygit2) $(lib-git) $(lib-git-lfs) $(lib-libgit2) $(lib-psycopg2) $(lib-pysqlite3) $(lib-pdal)
 
 
 # default target
@@ -87,6 +87,7 @@ env:
 
 # dependencies
 $(lib-git): $(lib-curl) $(lib-sqlite) git_build
+$(lib-git-lfs): git-lfs_build
 $(lib-proj): $(lib-sqlite) proj_build
 $(lib-libgit2): libgit2_build
 $(lib-spatialite): $(lib-sqlite) $(lib-geos) $(lib-proj) spatialite_build
@@ -315,6 +316,7 @@ build-Darwin: $(build-libs) $(brew-libs)
 	cp -vaf env/share/git-core/templates $(VENDOR_ENV)/share/git-core/
 	cp -vaf env/libexec/git-core $(VENDOR_ENV)/libexec/
 	cp -vaf env/bin/git $(VENDOR_ENV)/bin/
+	cp -vaf env/bin/git-lfs $(VENDOR_ENV)/bin/git-lfs
 	cp -vaf env/bin/pdal $(VENDOR_ENV)/bin/
 
 	tar czf $(vendor-Darwin-archive) -C $(VENDOR) env wheelhouse
