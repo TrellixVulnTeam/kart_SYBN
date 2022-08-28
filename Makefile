@@ -90,8 +90,6 @@ $(py-install-dev): requirements/dev.txt $(py-install-main) $(py-install-test) $(
 
 $(VIRTUAL_ENV)/.requirement%.installed: | $(VIRTUAL_ENV)
 	pip install --no-deps -r $<
-	# TODO - this is a hack and only works on macos. Also the recipe order is important for some reason.
-	python -m pip show pdal | awk '/Location:/ {print $$2 "/pdal/libpdalpython.cpython-37m-darwin.so"}' | xargs install_name_tool -add_rpath @loader_path/../../../ -add_rpath @loader_path/../
 	touch $@
 
 $(VIRTUAL_ENV)/.%.installed: | $(VIRTUAL_ENV)
@@ -160,7 +158,7 @@ kart-cli-helper = cli_helper/kart_cli_helper
 $(kart-cli-helper): cli_helper/kart.c.o cli_helper/cJSON.c.o  | $(VIRTUAL_ENV)
 	$(CC) -o $@ cli_helper/kart.c.o cli_helper/cJSON.c.o
 
-cli_helper/kart.c.o: cli_helper/kart.c 
+cli_helper/kart.c.o: cli_helper/kart.c
 	$(CC) -Wall -o $@ -g  -c $<
 
 cli_helper/cJSON.c.o: cli_helper/cJSON.c
