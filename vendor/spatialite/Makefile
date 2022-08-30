@@ -87,7 +87,7 @@ source: src
 #
 
 $(configure-spatialite): export PATH:=$(realpath ../geos/env/bin):$(PATH)
-$(configure-spatialite): export PKG_CONFIG_PATH=/dev/null
+$(configure-spatialite): export PKG_CONFIG_PATH=$(PREFIX)/lib/pkgconfig/
 $(configure-spatialite): export CFLAGS:=$(CFLAGS)
 $(configure-spatialite): export LDFLAGS:=$(LDFLAGS)
 $(configure-spatialite): | src $(libs)
