@@ -517,7 +517,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.PY_VER }}
-          
+
       - name: "python: pip cache"
         uses: actions/cache@v2
         with:
@@ -775,9 +775,6 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/.cache/ccache
       CCACHE_COMPRESS: "1"
       PY_VER: "3.7"
-      KART_POSTGRES_URL: "postgresql://postgres:@localhost:5432/postgres"
-      KART_SQLSERVER_URL: "mssql://sa:PassWord1@localhost:1433/master"
-      KART_MYSQL_URL: "mysql://root:PassWord1@localhost:3306"
     services:
       postgis:
         image: postgis/postgis
@@ -884,13 +881,19 @@ jobs:
           sudo ACCEPT_EULA=Y apt-get install -q -y msodbcsql17
 
       - name: "app: unit tests"
-        env:
-          KART_EXPECT_GITFILTEREXTENSION: 0
-          KART_EXPECT_GITSPATIALFILTER: 0
         working-directory: build
-        run: |
+        # github's linux runner seems to have quite a bloated environment.
+        # So much so that kart seems to have trouble forking subprocesses.
+        # So we strip it with 'env -i'
+        run: >
+          env -i
+          PATH="$PATH"
+          KART_EXPECT_GITFILTEREXTENSION=0
+          KART_EXPECT_GITSPATIALFILTER=0
+          KART_POSTGRES_URL="postgresql://postgres:@localhost:5432/postgres"
+          KART_SQLSERVER_URL="mssql://sa:PassWord1@localhost:1433/master"
+          KART_MYSQL_URL="mysql://root:PassWord1@localhost:3306"
           ctest -V
-
 
   #
   # macOS via CMake
@@ -1009,7 +1012,6 @@ jobs:
         run: |
           ctest -V
 
-
   #
   # Windows via CMake
   #
@@ -1018,7 +1020,7 @@ jobs:
     runs-on: windows-2019
     continue-on-error: true
     env:
-      PY_VER: "3.7"  # needs to match the Windows job since we use its vendor archive.
+      PY_VER: "3.7" # needs to match the Windows job since we use its vendor archive.
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
     # by the push to the branch.
