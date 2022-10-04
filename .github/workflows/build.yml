@@ -895,7 +895,7 @@ jobs:
   #       run: |
   #         ctest -V
   Linux-cmake-arm64:
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: buildjet-4vcpu-ubuntu-2204-arm
     continue-on-error: true
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run
@@ -1006,7 +1006,7 @@ jobs:
       - name: "app: configure"
         run: |
           cmake -B build -S . \
-            -DSpatiaLite_EXTENSION=/usr/lib/x86_64-linux-gnu/mod_spatialite.so \
+            -DSpatiaLite_EXTENSION=/usr/lib/aarch64-linux-gnu/mod_spatialite.so \
             -DPROJ_DATADIR=/usr/share/proj
 
       - name: "app: build"
@@ -1021,7 +1021,7 @@ jobs:
       - name: "app: install database drivers for tests"
         run: |
           curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
+          curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list > /dev/null
           sudo apt-get update -q -y
           sudo ACCEPT_EULA=Y apt-get install -q -y msodbcsql17
 
