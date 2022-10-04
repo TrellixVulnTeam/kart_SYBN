@@ -916,34 +916,37 @@ jobs:
       CCACHE_DIR: ${{ github.workspace }}/.cache/ccache
       CCACHE_COMPRESS: "1"
       PY_VER: "3.7"
-      KART_POSTGRES_URL: "postgresql://postgres:@localhost:5432/postgres"
-      KART_SQLSERVER_URL: "mssql://sa:PassWord1@localhost:1433/master"
-      KART_MYSQL_URL: "mysql://root:PassWord1@localhost:3306"
+      # TODO: re-enable this; see below
+      # KART_POSTGRES_URL: "postgresql://postgres:@localhost:5432/postgres"
+      # KART_SQLSERVER_URL: "mssql://sa:PassWord1@localhost:1433/master"
+      # KART_MYSQL_URL: "mysql://root:PassWord1@localhost:3306"
       FORCE_COLOR: "YES"
-    services:
-      postgis:
-        image: postgis/postgis
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 2s
-          --health-timeout 2s
-          --health-retries 5
-          -e POSTGRES_HOST_AUTH_METHOD=trust
-        ports:
-          - 5432:5432
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server
-        options: >-
-          -e ACCEPT_EULA=Y
-          -e SA_PASSWORD=PassWord1
-        ports:
-          - 1433:1433
-      mysql:
-        image: mysql
-        options: >-
-          -e MYSQL_ROOT_PASSWORD=PassWord1
-        ports:
-          - 3306:3306
+    # TODO: fix this. I think we need docker hub auth?
+    # https://buildjet.com/for-github-actions/docs/faq#authenticate-container-and-services
+    # services:
+    #   postgis:
+    #     image: postgis/postgis
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 2s
+    #       --health-timeout 2s
+    #       --health-retries 5
+    #       -e POSTGRES_HOST_AUTH_METHOD=trust
+    #     ports:
+    #       - 5432:5432
+    #   sqlserver:
+    #     image: mcr.microsoft.com/mssql/server
+    #     options: >-
+    #       -e ACCEPT_EULA=Y
+    #       -e SA_PASSWORD=PassWord1
+    #     ports:
+    #       - 1433:1433
+    #   mysql:
+    #     image: mysql
+    #     options: >-
+    #       -e MYSQL_ROOT_PASSWORD=PassWord1
+    #     ports:
+    #       - 3306:3306
 
     steps:
       - uses: actions/checkout@v2
