@@ -954,9 +954,8 @@ jobs:
       #
       # setup
       #
-
       - name: "python"
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ env.PY_VER }}
 
